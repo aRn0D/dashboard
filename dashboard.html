@@ -1,0 +1,306 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
+</head>
+<body>
+    <div id="dashboard"></div>
+
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.0/react.js"></script>
+
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.0/react-dom.js"></script>
+
+    <script type="text/javascript"
+            src="https://raw.githubusercontent.com/JedWatson/classnames/master/index.js"></script>
+
+    <script type="text/javascript"
+            src="//npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js"
+            integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8="
+            crossorigin="anonymous"></script>
+
+    <script type="text/babel">
+        class WidgetRegistry {
+            constructor() {
+                this.widgets = [];
+            }
+
+            /**
+             * Add an unique element
+             *
+             * @param {string} key
+             * @param {Widget} element
+             */
+            register(key, element) {
+                if (!this.has(key)) {
+                    this.widgets[key] = element;
+                }
+            }
+
+            /**
+             * Remove an element
+             *
+             * @param {string} key
+             */
+            remove(key) {
+                if (this.exists(key)) {
+                    delete this.widgets[key]
+                }
+            }
+
+            /**
+             * Get an element
+             *
+             * @param {string} key
+             * @returns {Widget}
+             */
+            get(key) {
+                return this.widgets[key]
+            }
+
+            /**
+             * Check if the element exists.
+             *
+             * @param key (string)
+             * @returns {boolean}
+             */
+            has(key) {
+                return this.widgets[key] !== undefined;
+            }
+        }
+
+        class PimInstallWidget {
+            render() {
+                return (
+                    <Box title="Pim installations">
+                        <div className="ui attached segment">
+                            <div className="ui height column grid">
+                                {
+                                    this._getData().map(function (data) {
+                                        return (
+                                            <div className="column">
+                                                <Pim {...data} />
+                                            </div>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                    </Box>
+                )
+            }
+
+            _getData() {
+                var installations = [];
+                var versions = ['1.4', '1.5', '1.6', 'master'];
+                var installationsTypes = ['default', 'behat'];
+
+                for (var installationsType of installationsTypes) {
+                    for (var version of versions) {
+                        var applicationSuffix = 'behat' === installationsTypes ? '-behat' : '';
+                        var formattedVersion = version.replace('.', '');
+
+                        formattedVersion = 'master' === formattedVersion ? '' : formattedVersion;
+
+                        installations.push({
+                            'title': 'PIM '+version,
+                            'links': {
+                                'orm': 'http://pee'+applicationSuffix+formattedVersion+'.akeneo.local',
+                                'odm': 'http://peem'+applicationSuffix+formattedVersion+'.akeneo.local',
+                                'php-my-admin': ''
+
+                            },
+                            'type': installationsType
+                        });
+                    }
+                }
+
+                return installations;
+            }
+        }
+
+        class GithubRepositoryWidget {
+            render() {
+                return (
+                    <Box title="Github Repositories">
+                        <LinkList links={ this._getData() } />
+                    </Box>
+                );
+            }
+
+            _getData()
+            {
+                return [
+                    {
+                        'icon': {
+                            'icon':'code',
+                            'size':'large',
+                            'color': 'purple'
+                        },
+                        'title': 'akeneo/pim-community-dev',
+                        'description': 'The open source Product Information Management (PIM)'
+                    },
+                    {
+                        'icon': {
+                            'icon':'code',
+                            'size':'large',
+                            'color': 'purple'
+                        },
+                        'title': 'akeneo/pim-enterprise-dev',
+                        'description': 'The open source Product Information Management (PIM)'
+                    },
+                ]
+            }
+
+        }
+
+        class GithubPullRequestWidget {
+            render() {
+                return (
+                        <Box title="Github PR to review">
+                            <LinkList links={ this._getData() } />
+                        </Box>
+                );
+            }
+
+            _getData()
+            {
+                return [];
+            }
+        }
+
+        class GithubIssueWidget {
+            render() {
+                return (
+                    <Box title="Github Issues">
+                        <LinkList links={ this._getData() } />
+                    </Box>
+                );
+            }
+
+            _getData()
+            {
+                return [];
+            }
+        }
+
+
+        WidgetRegistry = new WidgetRegistry();
+        WidgetRegistry.register('pimInstallations', new PimInstallWidget());
+        WidgetRegistry.register('GithubRepository', new GithubRepositoryWidget());
+        WidgetRegistry.register('GithubPullRequest', new GithubPullRequestWidget());
+        WidgetRegistry.register('GithubIssue', new GithubIssueWidget());
+
+        var Widget = React.createClass({
+            render: function () {
+                var widget = WidgetRegistry.get(this.props.type);
+
+                return widget.render();
+            }
+        });
+
+        var Box = React.createClass({
+            render: function() {
+                var cssClasses = this.props.size+' wide column';
+
+                return (
+                    <div className={ cssClasses }>
+                        <h3 className="ui top attached header">
+                            { this.props.title }
+                        </h3>
+                        <div className="ui attached segment">
+                            { this.props.children }
+                        </div>
+                    </div>
+                );
+            }
+        });
+
+        var LinkList = React.createClass({
+            render: function() {
+                return (
+                    <div className="ui relaxed divided large selection list">
+                        {
+                            this.props.links.map(function(link) {
+                                return (
+                                    <Link {...link} />
+                                );
+                            })
+                        }
+                    </div>
+                );
+            }
+        });
+
+        var Pim = React.createClass({
+            render: function () {
+                return (
+                    <div className={ classNames('ui card', 'behat ' === this.props.type ? 'yellow ': 'purple') }>
+                        <div className="content">
+                            <div className="header"><Icon icon="code" />{ this.props.title }</div>
+                        </div>
+                        <div className="extra content">
+                            <span className="left floated">
+                                <a href={ this.props.links.orm }>
+                                    <Icon icon="database" /> ORM
+                                </a>
+                            </span>
+                            <span className="right floated">
+                                <a href={ this.props.links.odm }>
+                                    <Icon icon="file outline" /> ODM
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                );
+            }
+        });
+
+        var Link = React.createClass({
+            render: function() {
+                return (
+                    <div className="item">
+                        <Icon {...this.props.icon} />
+                        <div className="content">
+                            <a className="header">{this.props.title}</a>
+                            <div className="description">{this.props.description}</div>
+                        </div>
+                    </div>
+                );
+            }
+        });
+
+        var Icon = React.createClass({
+            render: function () {
+                return (
+                    <i className={ classNames('ui icon', this.props.icon, this.props.size, this.props.color) } />
+                );
+            }
+        });
+
+        var Dashboard = React.createClass({
+            render: function () {
+                return (
+                    <div className="ui grid padded container">
+                        <div className="sixteen wide column">
+                            <Widget type="pimInstallations" />
+                        </div>
+                        <div className="row three column">
+                            <Widget type="GithubRepository" />
+                            <Widget type="GithubIssue" />
+                            <Widget type="GithubPullRequest" />
+                        </div>
+                    </div>
+                )
+           }
+        });
+
+        ReactDOM.render(<Dashboard />, document.getElementById('dashboard'));
+    </script>
+</body>
+</html>
