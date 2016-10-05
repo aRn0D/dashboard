@@ -12,14 +12,26 @@ module.exports = React.createClass({
                 <div className={ classnames('ui card', this.props.color) }>
                     <div className="content">
                         <div className="header">
-                            <Icon icon={ this.props.icon }/>{ this.props.title }
+                            <a href={ this.props.url }>
+                                <Icon icon={ this.props.icon }/> { this.props.title }
+                            </a>
                         </div>
                     </div>
-                    <div className="extra content">
-                        <Link { ...this.props.links[0] } position="left" />
-                        <Link { ...this.props.links[1] } position="right" />
-                    </div>
+                    { this._createLinkNode() }
                 </div>
+            </div>
+        );
+    },
+
+    _createLinkNode: function () {
+        if (undefined === this.props.links) {
+            return null;
+        }
+
+        return (
+            <div className="extra content">
+                <Link { ...this.props.links[0] } position="left" />
+                <Link { ...this.props.links[1] } position="right" />
             </div>
         );
     }

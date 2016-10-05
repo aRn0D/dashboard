@@ -16,7 +16,21 @@ class GithubPullRequestWidget {
      * @returns {Array}
      */
     getData() {
-        return [];
+        let pullRequest = [];
+        for (let i = 0;i < 10;i++) {
+            pullRequest.push({
+                'icon': {
+                    'icon': 'github',
+                    'size': 'large',
+                    'color': 'black'
+                },
+                'title': 'Call to undefined function in ApcCache.php',
+                'description': '#4829 opened 5 days ago by mepdr',
+                'url': ''
+            });
+        }
+
+        return pullRequest;
     }
 }
 

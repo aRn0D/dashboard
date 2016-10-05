@@ -7,7 +7,7 @@ let Card = require('./card');
 module.exports = React.createClass({
    render: function() {
        return (
-           <div className={ classnames('ui grid', this.props.lineLength, 'column') }>
+           <div className={ classnames('ui grid', this.props.size, 'column') }>
                {
                    this.props.cards.map(function (card) {
                        return (

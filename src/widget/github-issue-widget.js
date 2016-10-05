@@ -1,6 +1,6 @@
 // namespace widget
 
-class IssueWidget {
+class GithubIssueWidget {
     /**
      * Return the type of the widget
      *
@@ -16,8 +16,22 @@ class IssueWidget {
      * @returns {Array}
      */
     getData() {
-        return [];
+        let issues = [];
+        for (let i = 0;i < 10;i++) {
+            issues.push({
+                'icon': {
+                    'icon': 'github',
+                    'size': 'large',
+                    'color': 'black'
+                },
+                'title': 'Call to undefined function in ApcCache.php',
+                'description': '#4829 opened 5 days ago by mepdr',
+                'url': ''
+            });
+        }
+
+        return issues;
     }
 }
 
-module.exports = new IssueWidget();
+module.exports = new GithubIssueWidget();

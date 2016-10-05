@@ -7,13 +7,10 @@ module.exports = React.createClass({
     render: function () {
         return (
             <div className="ui grid padded">
-                <div className="row sixtenn column">
+                <div className="ui row three column">
+                    <Widget type="useful-link" />
                     <Widget type="pim-installation" />
-                </div>
-                <div className="row three column">
-                    <Widget type="github-repository"/>
-                    <Widget type="github-issue"/>
-                    <Widget type="github-pull-request"/>
+                    <Widget type="github-repository" />
                 </div>
             </div>
         )
